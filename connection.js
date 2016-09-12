@@ -1,6 +1,8 @@
 var express = require("express");
 var mysql = require("mysql");
 
+var port = 2828;
+
 var connection = mysql.createConnection({ //connection to db
 	host: "10.0.0.23",
 	port: "3306",
@@ -11,16 +13,18 @@ var connection = mysql.createConnection({ //connection to db
 
 console.log("Initializing server...")
 var app = express(); //start framework
-var router = express.Router();
 
 
 console.log("Getting connection to DB...")
 connection.connect();
+
+
+var router = express.Router();	//new module for 'app'
 router.get("/", function (req, res) {
 	getUsers(connection, res);
 });
-app.use("/new", router);
-app.listen(2828);
+app.use("/new", router);		//add router to app
+app.listen(port);
 
 //connection.end();
 
