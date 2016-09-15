@@ -15,6 +15,7 @@ console.log("Initializing server...")
 var app = express(); //start framework
 
 
+
 console.log("Getting connection to DB...")
 connection.connect();
 
