@@ -7,6 +7,7 @@ exports.createPool = function () {
 	this.pool = mysql.createPool(conf); //create new connection pool
 
 	this.pool.config.connectionConfig.queryFormat = function (query, values) { //so we can use prepared statements with the format :label instead of ?
+		console.log("query0 = " + query);
 		if (!values) return query;
 		var temp = query.replace(/\:(\w+)/g, function (txt, key) {
 			if (values.hasOwnProperty(key)) {
@@ -16,6 +17,7 @@ exports.createPool = function () {
 			}
 			return txt;
 		}.bind(this));
+		console.log("query1 = " + temp);
 		return temp;
 	};
 }
@@ -42,6 +44,7 @@ exports.query = function (statement, body, res) { //@param statement: MySQL quer
 					console.error("out = " + err);
 				}
 				res.json(resObject);
+				return resObject;
 			});
 		}
 	});

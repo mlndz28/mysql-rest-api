@@ -1,11 +1,11 @@
 {
 	"mysql": {
 		"connectionLimit": 101,
-		"host": "localhost",
+		"host": "10.0.0.23",
 		"port": "3306",
-		"user": "mlndz",
-		"password": "colacho",
-		"database": "newTest"
+		"user": "root",
+		"password": "2347771",
+		"database": "modelador_flujos"
 
 	},
 
