@@ -1,0 +1,16 @@
+{
+	"mysql": {
+		"connectionLimit": 101,
+		"host": "localhost",
+		"port": "3306",
+		"user": "mlndz",
+		"password": "colacho",
+		"database": "newTest"
+
+	},
+
+	"express": {
+		"port": 2828
+	}
+
+}

@@ -1,0 +1,10 @@
+(12:18:03.503): TypeError: Object #<Object> has no method 'accessSync'
+(12:27:28.164): dayuum
+(12:29:43.210): Error: EEXIST, file already exists '../logs/2016_08_05'
+(12:29:44.968): Error: EEXIST, file already exists '../logs/2016_08_05'
+(12:30:33.928): dayuum
+(12:30:39.965): dayuum
+(12:40:48.164): :cccc
+(12:41:00.424): SELECT * FROM djent WHERE doesit = 'yeah'
+(12:42:14.763): Initializing server...
+(12:45:51.709)[log]: Initializing server...
