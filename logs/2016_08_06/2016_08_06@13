@@ -1,0 +1,48 @@
+(13:01:52.872)[inf]: Initializing server on port 2828.
+(13:02:20.836)[ERR]: out =Error: connect EHOSTUNREACH 10.0.0.23:3306
+(13:04:21.234)[inf]: Initializing server on port 2828.
+(13:04:25.700)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:04:25.730)[log]: query1 = SELECT * FROM djent WHERE doesit = 'yess'
+(13:04:25.513)[log]: in = {"doesit":"yess","as":"as"}
+(13:04:25.514)[log]: out = {"error":"none","data":[{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"}]}
+(13:45:57.890)[inf]: Initializing server on port 2828.
+(13:46:01.543)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:01.545)[log]: query1 = SELECT * FROM djent WHERE doesit = 'yess'
+(13:46:01.565)[log]: in = {"doesit":"yess","as":"as"}
+(13:46:01.566)[log]: out = {"error":"none","data":[{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"},{"doesit":"yess","ofcourseitdoes":"yahhh"}]}
+(13:46:04.254)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:04.256)[log]: query1 = SELECT * FROM djent WHERE doesit = 
+(13:46:04.261)[log]: in = {"as":"as"}
+(13:46:04.262)[ERR]: out = Error: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+(13:46:16.987)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:16.988)[log]: query1 = SELECT * FROM djent WHERE doesit = 'yess\''
+(13:46:16.988)[log]: in = {"doesit":"yess'","as":"as"}
+(13:46:16.989)[log]: out = {"error":"none","data":[]}
+(13:46:20.793)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:20.793)[log]: query1 = SELECT * FROM djent WHERE doesit = 'yess\'\''
+(13:46:20.794)[log]: in = {"doesit":"yess''","as":"as"}
+(13:46:20.794)[log]: out = {"error":"none","data":[]}
+(13:46:23.544)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:23.544)[log]: query1 = SELECT * FROM djent WHERE doesit = 'yess\'\'\'\'\'\'\''
+(13:46:23.545)[log]: in = {"doesit":"yess'''''''","as":"as"}
+(13:46:23.545)[log]: out = {"error":"none","data":[]}
+(13:46:34.719)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:34.720)[log]: query1 = SELECT * FROM djent WHERE doesit = '\'yess\''
+(13:46:34.721)[log]: in = {"doesit":"'yess'","as":"as"}
+(13:46:34.721)[log]: out = {"error":"none","data":[]}
+(13:46:43.646)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:43.646)[log]: query1 = SELECT * FROM djent WHERE doesit = '\"\'yess\'\"'
+(13:46:43.646)[log]: in = {"doesit":"\"'yess'\"","as":"as"}
+(13:46:43.647)[log]: out = {"error":"none","data":[]}
+(13:46:49.489)[log]: query0 = SELECT * FROM djent WHERE doesit = :doesit
+(13:46:49.491)[log]: query1 = SELECT * FROM djent WHERE doesit = '\'yess\''
+(13:46:49.492)[log]: in = {"doesit":"'yess'","as":"as"}
+(13:46:49.492)[log]: out = {"error":"none","data":[]}
+(13:47:21.221)[log]: query0 = CALL p_A_folk (:int, :dec, :bool)
+(13:47:21.221)[log]: query1 = CALL p_A_folk ('1', '2.01', 'false')
+(13:47:21.454)[log]: in = {"int":"1","dec":"2.01","bool":"false"}
+(13:47:21.454)[ERR]: out = Error: ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: Incorrect integer value: 'false' for column 'p_peace' at row 1
+(13:47:52.520)[log]: query0 = CALL p_A_folk (:int, :dec, :bool)
+(13:47:52.520)[log]: query1 = CALL p_A_folk ('1', '2.01', '1')
+(13:47:52.791)[log]: in = {"int":"1","dec":"2.01","bool":"1"}
+(13:47:52.791)[log]: out = {"error":"none","data":{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":1,"message":"","protocol41":true,"changedRows":0}}
