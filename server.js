@@ -3,7 +3,7 @@
 var logger = require("./api/logger.js"); //logging for our API
 logger.bind();
 
-var connection = require("./api/connection.js"); //instantiate connection provider
+var connection = require("./api/dbConnection.js"); //instantiate connection provider
 connection.createPool(); //initiate connection pool
 
 var app = require("./api/app.js").app; //create Express application

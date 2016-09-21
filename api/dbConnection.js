@@ -25,7 +25,7 @@ exports.query = function (statement, body, res) { //@param statement: MySQL quer
  */
 
 function parseQuery(statement, values) {
-    //console.log("query0 = " + statement);
+    //gitconsole.log("query0 = " + statement);
     if (!values) return statement;
     var temp = statement.replace(/\:(\w+)/g, function (txt, key) {
         if (values.hasOwnProperty(key)) {
