@@ -1,6 +1,10 @@
 var express = require("express");
 var conf = require("../../conf/default.json").mysql;
 
+/*
+ * Get all the available procedure descriptions on the database. 
+ */
+
 exports.router = function (connection) {
 
 	var router = express.Router();
@@ -30,22 +34,17 @@ var getProcedureNames = function (connection, res) {
 			};
 			for (i = 0; i < obj.data.length; i++) {
 				procedures.push(obj.data[i].Name);
-				//tempObject.descriptions.push(connection.query("SHOW CREATE PROCEDURE " + item.Name + " ;", {}, getProcedureDescriptions(connection, res)).data['Create Procedure']);
 				if (i == obj.data.length - 1) {
-					connection.query("SHOW CREATE PROCEDURE " + procedures[i] + " ;", {}, getProcedureDescriptions(connection, res, tempObject, true));
+					connection.query("SHOW CREATE PROCEDURE " + procedures[i] + " ;", {}, getProcedureDescriptions(res, tempObject, true));
 				} else {
-					connection.query("SHOW CREATE PROCEDURE " + procedures[i] + " ;", {}, getProcedureDescriptions(connection, res, tempObject, false));
+					connection.query("SHOW CREATE PROCEDURE " + procedures[i] + " ;", {}, getProcedureDescriptions(res, tempObject, false));
 				}
 			}
-			//console.log(procedures);
-			//res.json(tempObject);
-
-
 		}
 	}
 }
 
-var getProcedureDescriptions = function (connection, res, tempObject, returnJson) {
+var getProcedureDescriptions = function (res, tempObject, returnJson) {
 	return {
 		json: function (obj) {
 			obj.data.forEach(function (item) {
@@ -58,5 +57,3 @@ var getProcedureDescriptions = function (connection, res, tempObject, returnJson
 		}
 	}
 }
-
-//consultor2.prepare("SHOW CREATE PROCEDURE "+tempObj.getString("ROUTINE_NAME")).doQuery();

@@ -1,4 +1,7 @@
-//web API implementation for MySQL DBs
+/**
+ * Web API implementation for MySQL DBs
+ * @author Fabian Melendez fabian.melendez.a@gmail.com
+ */
 
 var logger = require("./api/logger.js"); //logging for our API
 logger.bind();

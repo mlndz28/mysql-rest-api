@@ -1,6 +1,11 @@
 var fs = require('fs');
 var util = require('util');
 
+/*
+ * Override console methods to export data to log files.
+ * @constructor
+ */
+
 exports.bind = function () {
 	console.log = function (data) {
 		toFile(data, "log");
@@ -20,10 +25,20 @@ exports.bind = function () {
 	};
 };
 
+/*
+ * Standard console logging.
+ */
 
 function toSTDOUT(data) {
 	process.stdout.write(util.format(data) + '\n'); //just pass data to stdout
 }
+
+/*
+ * Write entry to log file.
+ * @param data - Data entries.
+ * @param {String} type - Entry's header.
+ */
+
 
 function toFile(data, type) {
 	var d = new Date();
@@ -40,5 +55,5 @@ function toFile(data, type) {
 		flags: 'a',
 		autoClose: true,
 		fd: null,
-	}).write("(" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2) + "." + (d.getMilliseconds() + "00").slice(0, 3) + ")["+type+"]: " + util.format(data) + '\n');
+	}).write("(" + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2) + "." + (d.getMilliseconds() + "00").slice(0, 3) + ")[" + type + "]: " + util.format(data) + '\n');
 }
