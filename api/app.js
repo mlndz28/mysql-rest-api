@@ -9,9 +9,14 @@ var conf = require("../conf/default.json").express;
 function app() {
 	var app = express(); //start API
 	console.info("Server running on port " + conf.port + ".");
+	app.use(function (req, res, next) {
+		res.header("Access-Control-Allow-Origin", "*");
+		res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+		next();
+	});
+
 
 	var bodyParser = require('body-parser') //in order to get body content from requests
-	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));

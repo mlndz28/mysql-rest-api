@@ -1,8 +1,9 @@
 var express = require("express");
 var conf = require("../../conf/default.json").mysql;
 
-/*
- * Get all the available table descriptions on the database. 
+/**
+ * Get all the available table descriptions in the database.
+ * @function tables
  */
 
 exports.router = function (connection) {
@@ -28,28 +29,25 @@ var getTableNames = function (connection, res, db) {
 			var tempObject = {
 				tables: []
 			};
+			var size = obj.data.length;
 			for (i = 0; i < obj.data.length; i++) {
 				var table = obj.data[i]["Tables_in_" + db];
-				if (i == obj.data.length - 1) {
-					connection.query("DESCRIBE " + table + " ;", {}, getTableDescription(res, tempObject, table, true));
-				} else {
-					connection.query("DESCRIBE " + table + " ;", {}, getTableDescription(res, tempObject, table, false));
-				}
+				connection.query("DESCRIBE " + table + " ;", {}, getTableDescription(res, tempObject, table, size));
 			}
 		}
 	}
 }
 
-var getTableDescription = function (res, tempObject, table, returnJson) {
+var getTableDescription = function (res, tempObject, table, size) {
 	return {
 		json: function (obj) {
 			tempObject.tables.push({
 				name: table,
 				fields: obj.data
 			});
-			if (returnJson) {
+			if (tempObject.tables.length == size) {
+				//when all tables have been added
 				res.json(tempObject);
-				console.log(tempObject);
 			}
 		}
 	}

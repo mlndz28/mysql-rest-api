@@ -1,0 +1,28 @@
+{
+	"mysql": {
+		"connectionLimit": 101,
+		"host": "localhost",
+		"port": "3306",
+		"user": "nico",
+		"password": "lagartello",
+		"database": "programathon2016"
+
+	},
+
+	"express": {
+		"port": 2828
+	},
+
+	"generator": {
+		"crud": {
+			"request": {
+				"host": "localhost",
+				"port": 2828,
+				"path": "/tables/get",
+				"method": "POST"
+			},
+			"exceptions": ["folk"],
+			"routesDir": "../api/routes/gen"
+		}
+	}
+}

@@ -1,8 +1,9 @@
 var express = require("express");
 var conf = require("../../conf/default.json").mysql;
 
-/*
- * Get all the available procedure descriptions on the database. 
+/**
+ * Get all the available procedure descriptions in the database. 
+ * @function procedures
  */
 
 exports.router = function (connection) {
@@ -22,6 +23,10 @@ exports.router = function (connection) {
 	return router;
 }
 
+/**
+ * @memberOf procedures
+ * @private
+ */
 
 var getProcedureNames = function (connection, res) {
 
@@ -57,3 +62,5 @@ var getProcedureDescriptions = function (res, tempObject, returnJson) {
 		}
 	}
 }
+
+/**#@-*/

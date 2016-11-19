@@ -1,5 +1,6 @@
 /**
  * Routes all paths contained in routes folder to main app.
+ * @constructor
  * @param app - Express app
  * @param connection - DB connection
  */
@@ -7,10 +8,11 @@ exports.route = function (app, connection) {
 
 	/**
 	 * Routes single file.
+	 * @memberOf route
 	 * @param {String} path - File name with the router
 	 */
 	addToApp = function (path) {
-		app.use("/", require("./routes/" + path).router(connection));
+		app.use("/", require("." + path).router(connection));
 	}
 
 	var files = getFiles("./api/routes");
@@ -22,6 +24,7 @@ exports.route = function (app, connection) {
 
 /**
  * Get all files on first level from folder.
+ * @memberof route 
  * @param {String} dir - Folder path
  */
 
@@ -35,7 +38,12 @@ function getFiles(dir) {
 		var stat = filesystem.statSync(dir + '/' + file);
 
 		if (!stat.isDirectory()) {
-			results.push(file);
+			results.push(dir + "/" + file);
+		} else {
+			subresults = getFiles(dir + "/" + file);
+			for (i = 0; i < subresults.length; i++) {
+				results.push(subresults[i]);
+			}
 		}
 
 	});

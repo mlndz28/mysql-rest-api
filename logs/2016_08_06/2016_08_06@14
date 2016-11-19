@@ -1,4 +1,0 @@
-(14:45:26.596)[log]: query0 = CALL p_A_folk (:int, :dec, :bool)
-(14:45:26.596)[log]: query1 = CALL p_A_folk ('1', '2.01', '1')
-(14:45:26.707)[log]: in = {"int":"1","dec":"2.01","bool":"1"}
-(14:45:26.708)[log]: out = {"error":"none","data":{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":2,"warningCount":1,"message":"","protocol41":true,"changedRows":0}}
