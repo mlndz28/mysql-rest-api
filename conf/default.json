@@ -3,9 +3,9 @@
 		"connectionLimit": 101,
 		"host": "localhost",
 		"port": "3306",
-		"user": "mlndz",
-		"password": "colacho",
-		"database": "programathon2016"
+		"user": "simapla",
+		"password": "lagartello",
+		"database": "SimaplaDb"
 
 	},
 
@@ -21,8 +21,18 @@
 				"path": "/tables/get",
 				"method": "POST"
 			},
-			"exceptions": ["folk"],
-			"routesDir": "../api/routes/gen"
+			"exceptions": [],
+			"routesDir": "../api/routes/gen/crud"
+		},
+		"procedures": {
+			"request": {
+				"host": "localhost",
+				"port": 2828,
+				"path": "/procedures/get",
+				"method": "POST"
+			},
+			"exceptions": [],
+			"routesDir": "../api/routes/gen/procedures"
 		}
 	}
 }

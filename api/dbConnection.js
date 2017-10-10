@@ -4,7 +4,7 @@ var conf = require("../conf/default.json").mysql;
 var pool;
 
 /**
- * Set up new connection pool. 
+ * Set up new connection pool.
  * @constructor
  */
 
@@ -29,7 +29,7 @@ exports.query = function (statement, body, res) { //;
 		if (err) { //if can't connect to DB
 			onError(err, res);
 		} else {
-			onConnect(statement, body, connection, res);
+			connect(statement, body, connection, res);
 		}
 	});
 }
@@ -155,11 +155,11 @@ function parseQuery(statement, values) {
  * @memberof dbConnection
  * @param {String} statement - MySQL query
  * @param {Object} body - Input data
- * @param connection - From pool 
+ * @param connection - From pool
  * @param res - Express response
  */
 
-function onConnect(statement, body, connection, res) {
+function connect(statement, body, connection, res) {
 	connection.query(statement, body, function (err, results) {
 		console.log("in = " + JSON.stringify(body));
 		//as it's not being used anymore

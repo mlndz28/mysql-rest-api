@@ -5,7 +5,9 @@ var config = require('../conf/default.json').generator.crud;
 var requestStatus;
 var options = config.request;
 var exceptions = config.exceptions;
+var dir = config.routesDir;
 
+// Request to api/routes/tables (service must be up)
 http.request(options, function (res) {
 	if (res.statusCode != 200) {
 		console.log("Error retrieving data");
@@ -20,11 +22,13 @@ http.request(options, function (res) {
 	});
 }).end();
 
-//Main function
+// Main function
 function generate(tables) {
+	mkdirp(dir);
 	for (i1 = 0; i1 < tables.length; i1++) {
 		it: {
 			var table = tables[i1];
+			if(!table.fields) break it;
 			var name = table.name;
 			for (i2 = 0; i2 < exceptions.length; i2++) {
 				if (name == exceptions[i2]) {
@@ -46,12 +50,15 @@ function generate(tables) {
 	}
 }
 
-//Create statements
+/* Create statements */
+
+// Return the select statement
 function select(name) {
 	var statement = "SELECT :C FROM " + name + " WHERE :OU";
 	return statement;
 }
 
+// Return the insert statement
 function insert(name, fields) {
 	var columns = "";
 	var values = "";
@@ -68,18 +75,20 @@ function insert(name, fields) {
 
 }
 
+// Return the delete statement
 function deleteSt(name) {
 	var statement = "DELETE FROM " + name + " WHERE :OR";
 	return statement;
 }
 
+// Return the update statement
 function update(name, fields) {
 	var set = "";
 	var statement = "UPDATE " + name + " SET :OC WHERE :OF";
 	return statement;
 }
 
-//Generate javascript code for routes
+// Generate javascript code for routes
 function routeCode(tableName, fields, fieldTypes, keys) {
 	console.log("Generating route for", tableName);
 	var js = "";
@@ -133,24 +142,33 @@ function routeCode(tableName, fields, fieldTypes, keys) {
 	return js;
 }
 
+
+// Write code into a file
 function saveToFile(code, table) {
-	var dir = config.routesDir;
-
 	console.log("Saving " + table + ".js");
-
-	try {
-		//create folder if it doesn't exist
-		fs.mkdirSync(dir);
-		console.log("Creating gen directory");
-	} catch (e) {
-		//expected exception in case it exists
-		if (e.code != "EEXIST") {
-			data = e.toString();
-		}
-	}
-	fs.createWriteStream(dir + "/" + table + ".js", { //write into file 
+	fs.createWriteStream(dir + "/" + table + ".js", { //write into file
 		flags: 'w',
 		autoClose: true,
 		fd: null,
 	}).write(code);
+}
+
+// Create a directory along with its parents (in case they don't exist)
+function mkdirp(path){
+	var folders = path.split("/");
+	var parentBuild = "";
+
+	console.log("Creating gen directory");
+	for( i = 0; i < folders.length; i++ ){
+		parentBuild += folders[i]+"/";
+		try {
+			//create folder if it doesn't exist
+			fs.mkdirSync(parentBuild);
+		} catch (e) {
+			//expected exception in case it exists
+			if (e.code != "EEXIST") {
+				data = e.toString();
+			}
+		}
+	}
 }

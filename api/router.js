@@ -24,7 +24,7 @@ exports.route = function (app, connection) {
 
 /**
  * Get all files on first level from folder.
- * @memberof route 
+ * @memberof route
  * @param {String} dir - Folder path
  */
 
