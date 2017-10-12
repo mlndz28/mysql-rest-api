@@ -1,9 +1,17 @@
 {
-  "name": "node-mysql",
-  "version": "0.0.1",
-  "dependencies": {
-    "body-parser": "^1.0.2",
-    "express": "^4.10.6",
-    "mysql": "^2.5.4"
-  }
+    "name": "mysql-rest-api",
+    "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/mlndz28/mysql-rest-api.git"
+    },
+    "scripts": {
+		"prestart": "node ./generator/crud.js && node ./generator/procedures.js",
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.0.2",
+        "express": "^4.10.6",
+        "mysql": "^2.5.4"
+    }
 }

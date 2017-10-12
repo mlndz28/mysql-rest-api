@@ -1,28 +1,25 @@
 var http = require('http');
 var fs = require('fs');
+var procedures = require('../api/routes/procedures');
 var config = require('../conf/default.json').generator.procedures;
+var dbConfig = require('../conf/default.json').mysql;
+
+var connection = require("../api/dbConnection.js"); //instantiate connection provider
+connection.createPool(); //initiate connection pool
 
 var requestStatus;
 var options = config.request;
 var exceptions = config.exceptions;
 var dir = config.routesDir;
 
-// Request to api/routes/tables (service must be up)
-http.request(options, function (res) {
-	if (res.statusCode != 200) {
-		console.log("Error retrieving data");
-		console.log(res	);
+//Mocks the Response object from Express (for this file's purposes at least)
+var response = {
+	json: function(arg){
+		generate(arg.data);
 	}
+};
 
-	var whole = "";
-	res.on('data', function (chunk) {
-		whole += chunk;
-
-	});
-	res.on('end', function () {
-		generate(JSON.parse(whole).data);
-	});
-}).end();
+procedures.getProcedures(connection, response, dbConfig.database);
 
 // Main function
 function generate(procedures) {
@@ -38,6 +35,7 @@ function generate(procedures) {
 			saveToFile(routeCode(procedure), procedure.name);
 		}
 	}
+	console.log("\nProcedures generation done.\n");
 }
 
 // Create query
@@ -85,12 +83,13 @@ function routeCode(procedure) {
 
 // Write code into a file
 function saveToFile(code, procedure) {
-	console.log("Saving " + procedure + ".js");
-	fs.createWriteStream(dir + "/" + procedure + ".js", { //write into file
+	ws = fs.createWriteStream(dir + "/" + procedure + ".js", { //write into file
 		flags: 'w',
 		autoClose: true,
 		fd: null,
-	}).write(code);
+	});
+	ws.write(code);
+	ws.end(function(){process.exit()});
 }
 
 // Create a directory along with its parents (in case they don't exist)

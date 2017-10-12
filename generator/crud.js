@@ -1,26 +1,27 @@
 var http = require('http');
 var fs = require('fs');
+var tables = require('../api/routes/tables');
 var config = require('../conf/default.json').generator.crud;
+var dbConfig = require('../conf/default.json').mysql;
+
+var connection = require("../api/dbConnection.js"); //instantiate connection provider
+connection.createPool(); //initiate connection pool
 
 var requestStatus;
 var options = config.request;
 var exceptions = config.exceptions;
 var dir = config.routesDir;
 
-// Request to api/routes/tables (service must be up)
-http.request(options, function (res) {
-	if (res.statusCode != 200) {
-		console.log("Error retrieving data");
+//Mocks the Response object from Express (for this file's purposes at least)
+var response = {
+	json: function(arg){
+		generate(arg.tables);
 	}
-	var whole = "";
-	res.on('data', function (chunk) {
-		whole += chunk;
+};
 
-	});
-	res.on('end', function () {
-		generate(JSON.parse(whole).tables);
-	});
-}).end();
+//console.log(dbConfig);
+tables.getTables(connection, response, dbConfig.database);
+//console.log(response);
 
 // Main function
 function generate(tables) {
@@ -48,6 +49,7 @@ function generate(tables) {
 			saveToFile(routeCode(name, fields, fieldTypes, keys), name);
 		}
 	}
+	console.log("\nCRUD generation done.\n");
 }
 
 /* Create statements */
@@ -145,12 +147,14 @@ function routeCode(tableName, fields, fieldTypes, keys) {
 
 // Write code into a file
 function saveToFile(code, table) {
-	console.log("Saving " + table + ".js");
-	fs.createWriteStream(dir + "/" + table + ".js", { //write into file
+	var ws = fs.createWriteStream(dir + "/" + table + ".js", { //write into file
 		flags: 'w',
 		autoClose: true,
 		fd: null,
-	}).write(code);
+	});
+	ws.write(code);
+	ws.end(function(){process.exit()});
+
 }
 
 // Create a directory along with its parents (in case they don't exist)

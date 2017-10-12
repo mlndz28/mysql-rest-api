@@ -12,14 +12,25 @@ exports.router = function (connection) {
 
 	var get = express.Router();
 	get.post("/get", function (req, res) {
-		connection.query("SHOW PROCEDURE STATUS WHERE Db = '" + conf.database + "';", {}, getProcedureNames(connection, res));
-
+		getProcedures(connection, res, conf.database);
 	});
 	router.use("/procedures", get);
 
-
 	return router;
 }
+
+/**
+ * Ask the db information about the stored procedures.
+ * @memberOf procedures
+ * @param {Object} connection - MySQL connection
+ * @param {Object} res - Express response
+ * @param {String} db - Database name
+ */
+var getProcedures = function(connection, res, db) {
+	connection.query("SHOW PROCEDURE STATUS WHERE Db = '" + db + "';", {}, getProcedureNames(connection, res));
+}
+
+exports.getProcedures = getProcedures;
 
 /**
  * @memberOf procedures

@@ -17,10 +17,26 @@ exports.router = function(connection) {
     });
     router.use("/tables", get);
 
-
     return router;
 }
 
+/**
+ * Ask the db information about the tables.
+ * @memberOf tables
+ * @param {Object} connection - MySQL connection
+ * @param {Object} res - Express response
+ * @param {String} db - Database name
+ */
+var getTables = function(connection, res, db){
+	connection.query("SHOW TABLES;", {}, setTableNames(connection, res, db));
+}
+
+exports.getTables = getTables;
+
+/**
+ * @memberOf tables
+ * @private
+ */
 
 var setTableNames = function(connection, res, db) {
 
@@ -39,6 +55,11 @@ var setTableNames = function(connection, res, db) {
     }
 }
 
+/**
+ * @memberOf tables
+ * @private
+ */
+
 var setTableDescription = function(connection, res, tempObject, table, size) {
     return {
         json: function(obj) {
@@ -51,6 +72,11 @@ var setTableDescription = function(connection, res, tempObject, table, size) {
         }
     }
 }
+
+/**
+ * @memberOf tables
+ * @private
+ */
 
 var setForeignKeys = function(res, tempObject, tableDescription, size) {
     return {

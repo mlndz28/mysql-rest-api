@@ -51,7 +51,6 @@ exports.query = function (statement, body, res) { //;
  */
 
 function parseQuery(statement, values) {
-	//console.log("query0 = " + statement);
 	if (!values) return statement;
 	var temp = statement.replace(/\:V_(\w+)/g, function (txt, key) {
 		if (values.hasOwnProperty(key)) {
@@ -144,8 +143,6 @@ function parseQuery(statement, values) {
 
 	}.bind(this));
 
-
-	console.log("query1 = " + temp);
 	return temp;
 
 }
@@ -161,14 +158,12 @@ function parseQuery(statement, values) {
 
 function connect(statement, body, connection, res) {
 	connection.query(statement, body, function (err, results) {
-		console.log("in = " + JSON.stringify(body));
 		//as it's not being used anymore
 		connection.release();
 		if (!err) {
 			var resObject = new Object();
 			resObject["error"] = "none";
 			resObject["data"] = results;
-			console.log("out = " + JSON.stringify(resObject));
 			res.json(resObject);
 		} else {
 			//if query can't be executed

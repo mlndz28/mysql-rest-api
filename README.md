@@ -6,12 +6,12 @@ Usage
 
 Install the dependencies with
 ~~~bash
-	$ npm install
+$ npm install
 ~~~
 
 and start the api with
 ~~~bash
-	$ npm start
+$ npm start
 ~~~
 
 The request are x-www-formurlencoded, and all of them are POST.
@@ -42,7 +42,7 @@ Service generation
 
 The api must be running.
 ~~~bash
-	$ cd generator && node crud.js
+$ cd generator && node crud.js
 ~~~
 
 Then restart the api to access the new services.
@@ -52,5 +52,5 @@ Documentation generation
 
 Requires jsdoc.
 ~~~bash
-	$ ./docs.sh
+$ ./docs.sh
 ~~~
