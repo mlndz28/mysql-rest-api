@@ -1,5 +1,5 @@
 var mysql = require("mysql");
-var conf = require("../conf/default.json").mysql;
+var cli = require("cli");
 
 var pool;
 
@@ -8,7 +8,8 @@ var pool;
  * @constructor
  */
 
-function dbConnection() {
+function dbConnection(_configuration) {
+	conf = _configuration.mysql;
 	this.pool = mysql.createPool(conf); //create new connection pool
 	this.pool.config.connectionConfig.queryFormat = parseQuery; //adds formatting to prepared statements
 }
@@ -23,9 +24,9 @@ exports.createPool = dbConnection;
  * @param res - Express response
  */
 
-exports.query = function (statement, body, res) { //;
+exports.query = function(statement, body, res) { //;
 
-	this.pool.getConnection(function (err, connection) {
+	this.pool.getConnection(function(err, connection) {
 		if (err) { //if can't connect to DB
 			onError(err, res);
 		} else {
@@ -52,7 +53,7 @@ exports.query = function (statement, body, res) { //;
 
 function parseQuery(statement, values) {
 	if (!values) return statement;
-	var temp = statement.replace(/\:V_(\w+)/g, function (txt, key) {
+	var temp = statement.replace(/\:V_(\w+)/g, function(txt, key) {
 		if (values.hasOwnProperty(key)) {
 			if (values[key] == "") {
 				return "' '";
@@ -67,7 +68,7 @@ function parseQuery(statement, values) {
 		return txt;
 	}.bind(this));
 
-	temp = temp.replace(/\:C/g, function (txt, key) {
+	temp = temp.replace(/\:C/g, function(txt, key) {
 		var parsed = "";
 		if (values.hasOwnProperty("columns")) {
 			var columns = values.columns.split(",");
@@ -84,7 +85,7 @@ function parseQuery(statement, values) {
 		}
 	}.bind(this));
 
-	temp = temp.replace(/\:OF/g, function (txt, key) {
+	temp = temp.replace(/\:OF/g, function(txt, key) {
 		var parsed = "";
 		for (var param in values) {
 			if (param.slice(0, 2) == "f_" && values.hasOwnProperty(param)) {
@@ -103,7 +104,7 @@ function parseQuery(statement, values) {
 	}.bind(this));
 
 
-	temp = temp.replace(/\:OU/g, function (txt, key) {
+	temp = temp.replace(/\:OU/g, function(txt, key) {
 		var parsed = "";
 		for (var param in values) {
 			if (values.hasOwnProperty(param)) {
@@ -119,7 +120,7 @@ function parseQuery(statement, values) {
 	}.bind(this));
 
 
-	temp = temp.replace(/\:OR/g, function (txt, key) {
+	temp = temp.replace(/\:OR/g, function(txt, key) {
 		var parsed = "";
 		for (var param in values) {
 			if (values.hasOwnProperty(param)) {
@@ -131,7 +132,7 @@ function parseQuery(statement, values) {
 
 	}.bind(this));
 
-	temp = temp.replace(/\:OC/g, function (txt, key) {
+	temp = temp.replace(/\:OC/g, function(txt, key) {
 		var parsed = "";
 		for (var param in values) {
 			if (param.slice(0, 2) != "f_" && values.hasOwnProperty(param)) {
@@ -157,7 +158,7 @@ function parseQuery(statement, values) {
  */
 
 function connect(statement, body, connection, res) {
-	connection.query(statement, body, function (err, results) {
+	connection.query(statement, body, function(err, results) {
 		//as it's not being used anymore
 		connection.release();
 		if (!err) {
@@ -167,7 +168,7 @@ function connect(statement, body, connection, res) {
 			res.json(resObject);
 		} else {
 			//if query can't be executed
-			onError(err, res);
+			onError(err + ". Statement = " + statement, res);
 		}
 		return resObject;
 	});
@@ -181,8 +182,25 @@ function connect(statement, body, connection, res) {
  */
 
 function onError(err, res) {
-	console.error("out =" + err);
+	var outError;
+	switch (err.code) {
+		case "ER_ACCESS_DENIED_ERROR":
+			outError = "No access to the database. Check the user and password, as well as the database user privileges.";
+			break;
+		case "ER_BAD_DB_ERROR":
+			outError = "Database does not exist.";
+			break;
+		case "ECONNREFUSED", "ENOTFOUND":
+			outError = "Connection refused. No accessible database found on this address.";
+			break;
+		case "ETIMEDOUT":
+			outError = "Connection timed out. Can't connect to the database.";
+			break;
+		default:
+			outError = err;
+	}
+	cli.error(outError);
 	res.json({
-		error: err
+		error: outError
 	});
 }
