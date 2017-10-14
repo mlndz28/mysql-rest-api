@@ -1,27 +1,39 @@
 var http = require('http');
 var fs = require('fs');
-var tables = require('../api/routes/tables');
-var config = require('../conf/default.json').generator.crud;
-var dbConfig = require('../conf/default.json').mysql;
-
-var connection = require("../api/dbConnection.js"); //instantiate connection provider
-connection.createPool(); //initiate connection pool
-
+var tables = require('./tables');
+var config;
+var dbConfig;
 var requestStatus;
-var options = config.request;
-var exceptions = config.exceptions;
-var dir = config.routesDir;
+
+var connection = require("../../api/dbConnection.js"); //instantiate connection provider
+
 
 //Mocks the Response object from Express (for this file's purposes at least)
 var response = {
-	json: function(arg){
+	json: function(arg) {
 		generate(arg.tables);
 	}
 };
 
-//console.log(dbConfig);
-tables.getTables(connection, response, dbConfig.database);
-//console.log(response);
+var callback;
+var dir;
+var exceptions;
+var conf;
+
+exports.set = function(_configuration) {
+	conf = _configuration;
+};
+
+var exportedMain = function(_callback) {
+	var config = conf.generator.crud;
+	var dbConfig = conf.mysql;
+	dir = __dirname + "/../../api/routes/gen/crud";
+	exceptions = config.exceptions;
+	callback = _callback
+	connection.createPool(conf); //initiate connection pool
+	tables.getTables(connection, response, dbConfig.database);
+}
+exports.generate = exportedMain;
 
 // Main function
 function generate(tables) {
@@ -29,7 +41,7 @@ function generate(tables) {
 	for (i1 = 0; i1 < tables.length; i1++) {
 		it: {
 			var table = tables[i1];
-			if(!table.fields) break it;
+			if (!table.fields) break it;
 			var name = table.name;
 			for (i2 = 0; i2 < exceptions.length; i2++) {
 				if (name == exceptions[i2]) {
@@ -46,10 +58,12 @@ function generate(tables) {
 				keys.push(table.fields[i2].Key);
 			}
 
-			saveToFile(routeCode(name, fields, fieldTypes, keys), name);
+			saveToFile(routeCode(name, fields, fieldTypes, keys), name, i1 == tables.length - 1);
 		}
 	}
-	console.log("\nCRUD generation done.\n");
+	if (tables.length) {
+		console.log("CRUD generation done.")
+	};
 }
 
 /* Create statements */
@@ -92,7 +106,6 @@ function update(name, fields) {
 
 // Generate javascript code for routes
 function routeCode(tableName, fields, fieldTypes, keys) {
-	console.log("Generating route for", tableName);
 	var js = "";
 
 	function add(line) {
@@ -146,25 +159,26 @@ function routeCode(tableName, fields, fieldTypes, keys) {
 
 
 // Write code into a file
-function saveToFile(code, table) {
+function saveToFile(code, table, last) {
 	var ws = fs.createWriteStream(dir + "/" + table + ".js", { //write into file
 		flags: 'w',
 		autoClose: true,
 		fd: null,
 	});
 	ws.write(code);
-	ws.end(function(){process.exit()});
+	if (last) {
+		ws.end(callback)
+	};
 
 }
 
 // Create a directory along with its parents (in case they don't exist)
-function mkdirp(path){
+function mkdirp(path) {
 	var folders = path.split("/");
 	var parentBuild = "";
 
-	console.log("Creating gen directory");
-	for( i = 0; i < folders.length; i++ ){
-		parentBuild += folders[i]+"/";
+	for (i = 0; i < folders.length; i++) {
+		parentBuild += folders[i] + "/";
 		try {
 			//create folder if it doesn't exist
 			fs.mkdirSync(parentBuild);
