@@ -1,0 +1,26 @@
+{
+	"mysql": {
+		"connectionLimit": 100,
+		"host": "localhost",
+		"port": "3306",
+		"user": "meursault",
+		"password": "passwordsareabsurd",
+		"database": "arabsunderthesun"
+
+	},
+
+	"express": {
+		"port": 2828
+	},
+
+	"generator": {
+		"crud": {
+			"include": false,
+			"exceptions": []
+		},
+		"procedures": {
+			"include": true,
+			"exceptions": []
+		}
+	}
+}

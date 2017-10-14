@@ -1,3 +1,5 @@
 docs.sh
 logs
 api/routes/gen
+node_modules
+npm-debug.log
