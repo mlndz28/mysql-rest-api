@@ -6,20 +6,20 @@
  */
 exports.route = function (app, connection) {
 
-	/**
-	 * Routes single file.
-	 * @memberOf route
-	 * @param {String} path - File name with the router
-	 */
-	addToApp = function (path) {
-		app.use("/", require("." + path).router(connection));
-	}
-
-	var files = getFiles("./api/routes");
+	var files = getFiles(__dirname +"/routes");
 	files.forEach(function (file) {
-		addToApp(file);
+		addToApp(file, app, connection);
 	});
 
+}
+
+/**
+ * Routes single file.
+ * @memberOf route
+ * @param {String} path - File name with the router
+ */
+function addToApp(path, app, connection) {
+	app.use("/api/", require(path).router(connection));
 }
 
 /**
