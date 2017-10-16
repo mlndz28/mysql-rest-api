@@ -30,7 +30,8 @@
         "cli": "^1.0.1",
         "express": "^4.10.6",
         "lodash": "^4.17.4",
-        "mysql": "^2.5.4"
+        "mysql": "^2.5.4",
+        "rmdir": "^1.2.0" 
     },
 	"preferGlobal": "true",
 	"bugs": "https://github.com/mlndz28/mysql-rest-api/issues",
