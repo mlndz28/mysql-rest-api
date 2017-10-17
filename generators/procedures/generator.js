@@ -1,5 +1,6 @@
 var http = require('http');
 var fs = require('fs');
+var rmdir = require('rmdir');
 var procedures = require('./descriptions');
 
 var connection = require("../../api/dbConnection.js"); //instantiate connection provider
@@ -28,7 +29,8 @@ var exportedMain = function(_callback) {
 	var dbConfig = configuration.mysql;
 	var options = config.request;
 	exceptions = config.exceptions;
-	dir = __dirname + "/../../api/routes/gen/procedures";
+	genDir = __dirname + "/../../api/routes/gen";
+    dir = genDir + "/procedures";
 	callback = _callback;
 	connection.createPool(configuration); //initiate connection pool
 	procedures.getProcedures(connection, response, dbConfig.database);
@@ -37,6 +39,7 @@ exports.generate = exportedMain;
 
 // Main function
 function generate(procedures) {
+	rmdir(genDir); // Remove existing dir to avoid existing folders to be shown if new exceptions exist
 	mkdirp(dir);
 	for (i1 = 0; i1 < procedures.length; i1++) {
 		it: {
@@ -51,6 +54,8 @@ function generate(procedures) {
 	}
 	if (procedures.length) {
 		console.log("Procedures generation done.")
+    } else {
+        console.log("No procedures found. Skipping...")
 	};
 }
 
