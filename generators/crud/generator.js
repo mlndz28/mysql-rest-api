@@ -1,9 +1,10 @@
 var http = require('http');
 var fs = require('fs');
 var tables = require('./tables');
+var commons = require('../commons');
 var config;
 var dbConfig;
-var requestStatus;
+
 
 var connection = require("../../api/dbConnection.js"); //instantiate connection provider
 
@@ -37,7 +38,7 @@ exports.generate = exportedMain;
 
 // Main function
 function generate(tables) {
-	mkdirp(dir);
+	commons.mkdirp(dir);
 	for (i1 = 0; i1 < tables.length; i1++) {
 		it: {
 			var table = tables[i1];
@@ -170,23 +171,4 @@ function saveToFile(code, table, last) {
 		ws.end(callback)
 	};
 
-}
-
-// Create a directory along with its parents (in case they don't exist)
-function mkdirp(path) {
-	var folders = path.split("/");
-	var parentBuild = "";
-
-	for (i = 0; i < folders.length; i++) {
-		parentBuild += folders[i] + "/";
-		try {
-			//create folder if it doesn't exist
-			fs.mkdirSync(parentBuild);
-		} catch (e) {
-			//expected exception in case it exists
-			if (e.code != "EEXIST") {
-				data = e.toString();
-			}
-		}
-	}
 }

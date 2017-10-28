@@ -1,11 +1,12 @@
 var http = require('http');
 var fs = require('fs');
 var rmdir = require('rmdir');
+
 var procedures = require('./descriptions');
+var commons = require('../commons');
 
 var connection = require("../../api/dbConnection.js"); //instantiate connection provider
 
-var requestStatus;
 
 //Mocks the Response object from Express (for this file's purposes at least)
 var response = {
@@ -29,8 +30,7 @@ var exportedMain = function(_callback) {
 	var dbConfig = configuration.mysql;
 	var options = config.request;
 	exceptions = config.exceptions;
-	genDir = __dirname + "/../../api/routes/gen";
-    dir = genDir + "/procedures";
+	dir = __dirname + "/../../api/routes/gen/procedures/";
 	callback = _callback;
 	connection.createPool(configuration); //initiate connection pool
 	procedures.getProcedures(connection, response, dbConfig.database);
@@ -39,8 +39,16 @@ exports.generate = exportedMain;
 
 // Main function
 function generate(procedures) {
-	rmdir(genDir); // Remove existing dir to avoid existing folders to be shown if new exceptions exist
-	mkdirp(dir);
+	rmdir(dir); // Remove existing dir to avoid existing folders to be shown if new exceptions exist
+	//if (!procedures.length) {
+	if (!true) {
+		console.log("No procedures found. Skipping...");
+		process.nextTick(callback);
+		return;
+		//this.call(callback);
+		//return;
+	}
+	commons.mkdirp(dir);
 	for (i1 = 0; i1 < procedures.length; i1++) {
 		it: {
 			var procedure = procedures[i1];
@@ -49,14 +57,10 @@ function generate(procedures) {
 					break it;
 				}
 			}
-			saveToFile(routeCode(procedure), procedure.name, i1 == procedures.length - 1);
+			commons.saveToFile(routeCode(procedure), dir + procedure.name + ".js", i1 == procedures.length - 1, callback);
 		}
 	}
-	if (procedures.length) {
-		console.log("Procedures generation done.")
-    } else {
-        console.log("No procedures found. Skipping...")
-	};
+	console.log("Procedures generation done.")
 }
 
 // Create query
@@ -112,23 +116,4 @@ function saveToFile(code, procedure, last) {
 	if (last) {
 		ws.end(callback)
 	};
-}
-
-// Create a directory along with its parents (in case they don't exist)
-function mkdirp(path) {
-	var folders = path.split("/");
-	var parentBuild = "";
-
-	for (i = 0; i < folders.length; i++) {
-		parentBuild += folders[i] + "/";
-		try {
-			//create folder if it doesn't exist
-			fs.mkdirSync(parentBuild);
-		} catch (e) {
-			//expected exception in case it exists
-			if (e.code != "EEXIST") {
-				data = e.toString();
-			}
-		}
-	}
 }
