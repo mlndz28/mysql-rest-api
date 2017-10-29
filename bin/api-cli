@@ -82,13 +82,13 @@ var run = function() {
 	}
 
 	var pipeline = [];
-	if (!conf.generator.procedures.include) {
-		proceduresGenerator.set(conf);
-		pipeline.push(proceduresGenerator.generate)
-	}
 	if (!conf.generator.crud.include) {
 		pipeline.push(crudGenerator.generate)
 		crudGenerator.set(conf);
+	}
+	if (!conf.generator.procedures.include) {
+		proceduresGenerator.set(conf);
+		pipeline.push(proceduresGenerator.generate)
 	}
 	pipeline.push(server.start);
 

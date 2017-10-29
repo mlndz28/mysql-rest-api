@@ -1,5 +1,6 @@
 var http = require('http');
 var fs = require('fs');
+var rmdir = require('rmdir');
 var tables = require('./tables');
 var commons = require('../commons');
 var config;
@@ -28,16 +29,23 @@ exports.set = function(_configuration) {
 var exportedMain = function(_callback) {
 	var config = conf.generator.crud;
 	var dbConfig = conf.mysql;
-	dir = __dirname + "/../../api/routes/gen/crud";
+	dir = __dirname + "/../../api/routes/gen/crud/";
 	exceptions = config.exceptions;
 	callback = _callback
 	connection.createPool(conf); //initiate connection pool
-	tables.getTables(connection, response, dbConfig.database);
+	rmdir(dir, function(){
+		tables.getTables(connection, response, dbConfig.database);
+	});
 }
 exports.generate = exportedMain;
 
 // Main function
 function generate(tables) {
+	if (!tables.length) {
+		console.log("No tables found.");
+		process.exit();
+		return;
+	}
 	commons.mkdirp(dir);
 	for (i1 = 0; i1 < tables.length; i1++) {
 		it: {
@@ -59,7 +67,8 @@ function generate(tables) {
 				keys.push(table.fields[i2].Key);
 			}
 
-			saveToFile(routeCode(name, fields, fieldTypes, keys), name, i1 == tables.length - 1);
+			commons.saveToFile(routeCode(name, fields, fieldTypes, keys), dir + table.name + ".js", i1 == tables.length - 1, callback);
+
 		}
 	}
 	if (tables.length) {

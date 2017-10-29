@@ -32,6 +32,9 @@ var setTableNames = function(connection, res, db) {
 				tables: []
 			};
 			var size = obj.data.length;
+			if(!obj.data.length){
+				res.json(tempObject);
+			};
 			for (i = 0; i < obj.data.length; i++) {
 				var table = obj.data[i]["Tables_in_" + db];
 				//table description request

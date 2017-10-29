@@ -33,20 +33,19 @@ var exportedMain = function(_callback) {
 	dir = __dirname + "/../../api/routes/gen/procedures/";
 	callback = _callback;
 	connection.createPool(configuration); //initiate connection pool
-	procedures.getProcedures(connection, response, dbConfig.database);
+	// Remove existing dir to avoid existing folders to be shown if new exceptions exist
+	rmdir(dir, function(){
+		procedures.getProcedures(connection, response, dbConfig.database);
+	});
 }
 exports.generate = exportedMain;
 
 // Main function
 function generate(procedures) {
-	rmdir(dir); // Remove existing dir to avoid existing folders to be shown if new exceptions exist
-	//if (!procedures.length) {
-	if (!true) {
+	if (!procedures.length) {
 		console.log("No procedures found. Skipping...");
 		process.nextTick(callback);
 		return;
-		//this.call(callback);
-		//return;
 	}
 	commons.mkdirp(dir);
 	for (i1 = 0; i1 < procedures.length; i1++) {
@@ -103,17 +102,4 @@ function routeCode(procedure) {
 	add("}");
 
 	return js;
-}
-
-// Write code into a file
-function saveToFile(code, procedure, last) {
-	ws = fs.createWriteStream(dir + "/" + procedure + ".js", { //write into file
-		flags: 'w',
-		autoClose: true,
-		fd: null,
-	});
-	ws.write(code);
-	if (last) {
-		ws.end(callback)
-	};
 }

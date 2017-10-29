@@ -30,6 +30,12 @@ var getProcedureNames = function(connection, res) {
 			}
 			var data = [];
 
+			if(!obj.data.length){
+				res.json({
+					data: {},
+					error: null
+				});
+			};
 			for (i = 0; i < obj.data.length; i++) {
 				var procedure = {};
 				procedure.name = obj.data[i].Name;
@@ -59,7 +65,6 @@ var getProcedureDescriptions = function(res, data, procedure, returnSize) {
 				});
 			}
 			data.push(procedure);
-
 			if (data.length == returnSize) {
 				res.json({
 					data: data,
