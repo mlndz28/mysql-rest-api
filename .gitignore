@@ -1,4 +1,5 @@
 docs.sh
+docs
 logs
 api/routes/gen
 node_modules

@@ -1,42 +1,45 @@
 {
-    "name": "mysql-rest-api",
-    "version": "0.1.0",
-    "description": "Easy to deploy MySQL RESTful api.",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/mlndz28/mysql-rest-api.git"
-    },
-    "license": "MIT",
-    "keywords": [
-        "mysql",
-        "api"
-    ],
-    "scripts": {
-        "start": "node bin/api-cli"
-    },
-    "bin": {
-        "mysql-rest-api": "./bin/api-cli"
-    },
-    "files": [
-        "bin",
-        "api",
-        "generators",
-        "conf",
-        "server.js"
-    ],
-    "dependencies": {
-        "async": "^2.5.0",
-        "body-parser": "^1.0.2",
-        "cli": "^1.0.1",
-        "express": "^4.10.6",
-        "lodash": "^4.17.4",
-        "mysql": "^2.5.4",
-        "rmdir": "^1.2.0" 
-    },
-	"preferGlobal": "true",
-	"bugs": "https://github.com/mlndz28/mysql-rest-api/issues",
-    "contributors": [{
-        "name": "Fabian Melendez",
-        "github": "https://github.com/mlndz28"
-    }]
+  "name": "mysql-rest-api",
+  "version": "0.1.0",
+  "description": "Easy to deploy MySQL RESTful api.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlndz28/mysql-rest-api.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mysql",
+    "api"
+  ],
+  "scripts": {
+    "start": "node bin/api-cli"
+  },
+  "bin": {
+    "mysql-rest-api": "./bin/api-cli"
+  },
+  "files": [
+    "bin",
+    "api",
+    "generators",
+    "conf",
+    "server.js"
+  ],
+  "dependencies": {
+    "async": "^2.5.0",
+    "body-parser": "^1.0.2",
+    "cli": "^1.0.1",
+    "express": "^4.10.6",
+    "jsdoc": "^3.5.5",
+    "lodash": "^4.17.4",
+    "mysql": "^2.5.4",
+    "rmdir": "^1.2.0"
+  },
+  "preferGlobal": "true",
+  "bugs": "https://github.com/mlndz28/mysql-rest-api/issues",
+  "contributors": [
+    {
+      "name": "Fabian Melendez",
+      "github": "https://github.com/mlndz28"
+    }
+  ]
 }

@@ -1,6 +1,7 @@
+/** @module router */
+
 /**
  * Routes all paths contained in routes folder to main app.
- * @constructor
  * @param app - Express app
  * @param connection - DB connection
  */
@@ -15,7 +16,6 @@ exports.route = function (app, connection) {
 
 /**
  * Routes single file.
- * @memberOf route
  * @param {String} path - File name with the router
  */
 function addToApp(path, app, connection) {
@@ -24,7 +24,6 @@ function addToApp(path, app, connection) {
 
 /**
  * Get all files on first level from folder.
- * @memberof route
  * @param {String} dir - Folder path
  */
 

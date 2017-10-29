@@ -1,5 +1,9 @@
 #! /usr/bin/env node
 
+/**
+ * Command line interface for the api.
+ * @module api-cli
+ */
 var os = require('os');
 var cli = require('cli');
 var async = require('async');
@@ -51,7 +55,7 @@ if (cli.options.help || process.argv.length == 2) {
  * Compare two object's key structures.
  * @param {object} a - First object to compare
  * @param {object} b - Second object to compare
- * @return {bool} - Whether the objects have the same keys
+ * @return {bool} Whether the objects have the same keys
  */
 var hasSameKeys = function(a, b) {
 	let keySet = Object.keys(a);

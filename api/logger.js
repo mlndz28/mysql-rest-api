@@ -2,11 +2,14 @@ var fs = require('fs');
 var util = require('util');
 
 /**
- * Override console methods to export data to log files.
- * @constructor
+ * @module logger
  */
 
-function logger() {
+/**
+ * Overrides console methods to export data to log files.
+ */
+
+exports.bind = function() {
 	console.log = function (data) {
 		toFile(data, "log");
 		toSTDOUT(data);
@@ -24,11 +27,9 @@ function logger() {
 		toSTDOUT(data);
 	};
 };
-exports.bind = logger;
 
 /**
  * Standard console logging.
- * @memberof logger
  * @param data - Data entries.
  */
 
@@ -38,11 +39,9 @@ function toSTDOUT(data) {
 
 /**
  * Write entry to log file.
- * @memberof logger
  * @param data - Data entries.
  * @param {String} type - Entry's header.
  */
-
 
 function toFile(data, type) {
 	var d = new Date();
@@ -64,7 +63,7 @@ function toFile(data, type) {
 		}
 	}
 	var file = +d.getFullYear() + "_" + ("0" + (d.getMonth() + 1)).slice(-2) + "_" + ("0" + d.getDate()).slice(-2) + "@" + ("0" + d.getHours()).slice(-2); //new file every hour
-	fs.createWriteStream(dir + "/" + file, { //write into file (create if !exists) 
+	fs.createWriteStream(dir + "/" + file, { //write into file (create if !exists)
 		flags: 'a',
 		autoClose: true,
 		fd: null,

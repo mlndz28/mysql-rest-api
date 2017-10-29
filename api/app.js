@@ -1,11 +1,13 @@
 var express = require("express");
 var cli = require("cli");
-
 var conf = require("../server").configuration.express;
 
+/** @module app */
+
 /**
- * Start the API
+ * Starts the Express API
  * @constructor
+ * @returns {app} Express application
  */
 function app() {
 	var app = express(); //start API
