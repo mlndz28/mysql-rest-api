@@ -82,11 +82,11 @@ var run = function() {
 	}
 
 	var pipeline = [];
-	if (!conf.generator.crud.include) {
+	if (conf.generator.crud.include) {
 		pipeline.push(crudGenerator.generate)
 		crudGenerator.set(conf);
 	}
-	if (!conf.generator.procedures.include) {
+	if (conf.generator.procedures.include) {
 		proceduresGenerator.set(conf);
 		pipeline.push(proceduresGenerator.generate)
 	}
@@ -142,10 +142,10 @@ var useArguments = function() {
 	conf.express.port = opt.port;
 	conf.generator = {};
 	conf.generator.procedures = {};
-	conf.generator.procedures.include = opt['skip-procedures'];
+	conf.generator.procedures.include = !opt['skip-procedures'];
 	conf.generator.procedures.exceptions = [];
 	conf.generator.crud = {};
-	conf.generator.crud.include = opt['skip-crud'];
+	conf.generator.crud.include = !opt['skip-crud'];
 	conf.generator.crud.exceptions = [];
 
 	run();

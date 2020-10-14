@@ -15,11 +15,11 @@
 
 	"generator": {
 		"crud": {
-			"include": false,
+			"include": true,
 			"exceptions": []
 		},
 		"procedures": {
-			"include": true,
+			"include": false,
 			"exceptions": []
 		}
 	}

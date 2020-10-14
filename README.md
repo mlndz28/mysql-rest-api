@@ -88,7 +88,7 @@ Configuration files
 
 If you don't want to put all the arguments via command-line, you can use a configuration file. This is useful for scripting.
 
-The configuration files must have a .json extension and must the same keys of the next object:
+The configuration files must be a JSON file with this structure:
 
 ~~~json
 {
