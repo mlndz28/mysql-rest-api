@@ -52,7 +52,7 @@ function generate(tables) {
 			if (!table.fields) break it;
 			var name = table.name;
 			// exclude exceptions
-			for (i2 = 0; i2 < exceptions.length; i2++) {
+			for (i2 = 0; i2 < exceptions.length; i2++) {	
 				if (name == exceptions[i2]) {
 					break it;
 				}
@@ -63,7 +63,16 @@ function generate(tables) {
 
 			for (i2 = 0; i2 < table.fields.length; i2++) {
 				fields.push(table.fields[i2].Field);
-				fieldTypes.push(table.fields[i2].Type);
+				let type;
+				switch(table.fields[i2].Type){
+					case /int/: 
+						type = 'integer';
+						break;
+					default: 
+						type = 'string';
+						break;
+				}
+				fieldTypes.push(type);
 				keys.push(table.fields[i2].Key);
 			}
 
@@ -123,10 +132,15 @@ function routeCode(tableName, fields, fieldTypes, keys) {
 	}
 	add("var express = require(\"express\");");
 	add("\n");
+	
 	add("/**");
-	add(" * @function " + tableName);
+	add(" * GET /api/" + tableName);
+	add(" * @tag " + tableName);
+	add(" * @summary Find items from " + tableName);
+	add(" * @operationId find" + tableName);
+	add(" * @response 200 - Ok " + tableName);
 	for (i = 0; i < fields.length; i++) {
-		var temp = " *@param {" + fieldTypes[i] + "} " + fields[i];
+		var temp = " * @queryParam {" + fieldTypes[i] + "} " + fields[i];
 		if (keys[i] != "") {
 			temp += " - Key: " + keys[i];
 		}
@@ -134,33 +148,76 @@ function routeCode(tableName, fields, fieldTypes, keys) {
 	}
 	add(" */");
 	add("\n");
+	add("function get(req, res, connection){");
+	add("	connection.query(\"" + select(tableName) + "\", req.body, res);");
+	add("}\n");
+	
+	add("/**");
+	add(" * POST /api/" + tableName);
+	add(" * @tag " + tableName);
+	add(" * @summary Insert data in " + tableName);
+	add(" * @operationId add" + tableName);
+	for (i = 0; i < fields.length; i++) {
+		var temp = " * @bodyContent {" + fieldTypes[i] + "} " + fields[i];
+		if (keys[i] != "") {
+			temp += " - Key: " + keys[i];
+		}
+		add(temp);
+	}
+	add(" * @bodyRequired");
+	add(" * @response 200 - Ok " + tableName);
+	add(" */");
+	add("\n");
+	add("function post(req, res, connection){");
+	add("	connection.query(\"" + insert(tableName, fields) + "\", req.body, res);");
+	add("}\n");
+	
+	
+	add("/**");
+	add(" * PUT /api/" + tableName);
+	add(" * @tag " + tableName);
+	add(" * @summary Update items in " + tableName);
+	for (i = 0; i < fields.length; i++) {
+		var temp = " * @bodyContent {" + fieldTypes[i] + "} " + fields[i];
+		if (keys[i] != "") {
+			temp += " - Key: " + keys[i];
+		}
+		add(temp);
+	}
+	add(" * @response 200 - Ok " + tableName);
+	add(" * @bodyRequired");
+	add(" */");
+	
+	
+	add("\n");
+	add("function put(req, res, connection){");
+	add("	connection.query(\"" + update(tableName, fields) + "\", req.body, res);");
+	add("}\n");
+	
+	add("/**");
+	add(" * DELETE /api/" + tableName);
+	add(" * @tag " + tableName);
+	add(" * @summary Delete items in " + tableName);
+	for (i = 0; i < fields.length; i++) {
+		var temp = " * @pathParam {" + fieldTypes[i] + "} " + fields[i];
+		if (keys[i] != "") {
+			temp += " - Key: " + keys[i];
+		}
+		add(temp);
+	}
+	add(" * @response 200 - Ok " + tableName);
+	add(" */");
+	add("\n");
+	add("function del(req, res, connection){");
+	add("	connection.query(\"" + deleteSt(tableName) + "\", req.body, res);");
+	add("}\n");
+	
 	add("exports.router = function (connection) {");
 	add("	var router = express.Router();\n");
-
-	add("	var create = express.Router();");
-	add("	create.post(\"/add\", function (req, res) {");
-	add("		connection.query(\"" + insert(tableName, fields) + "\", req.body, res);");
-	add("	});");
-	add(" 	router.use(\"/" + tableName + "\", create);\n");
-
-
-	add("	var read = express.Router();");
-	add("	read.post(\"/get\", function (req, res) {");
-	add("		connection.query(\"" + select(tableName) + "\", req.body, res);");
-	add("	});");
-	add(" 	router.use(\"/" + tableName + "\", read);\n");
-
-	add("	var update = express.Router();");
-	add("	update.post(\"/update\", function (req, res) {");
-	add("		connection.query(\"" + update(tableName, fields) + "\", req.body, res);");
-	add("	});");
-	add(" 	router.use(\"/" + tableName + "\", update);\n");
-
-	add("	var deletePath = express.Router();");
-	add("	deletePath.post(\"/delete\", function (req, res) {");
-	add("		connection.query(\"" + deleteSt(tableName) + "\", req.body, res);");
-	add("	});");
-	add(" 	router.use(\"/" + tableName + "\", deletePath);\n");
+	add("	router.get(\"/" + tableName+"\", (req,res) => get(req, res, connection));");
+	add("	router.post(\"/" + tableName+"\", (req,res) => post(req, res, connection));");
+	add("	router.put(\"/" + tableName+"\", (req,res) => put(req, res, connection));");
+	add("	router.delete(\"/" + tableName+"\", (req,res) => del(req, res, connection));");
 	add("	return router;");
 	add("}");
 

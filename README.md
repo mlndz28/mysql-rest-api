@@ -60,21 +60,21 @@ The request are x-www-formurlencoded, and all of them are POST.
 CRUD
 ------
 
-The URL format goes by \<host\>:\<port\>/api/\<table\>/\<verb\>, and the verbs are:
+The URL format goes by \<host\>:\<port\>/api/\<table\>, using the next HTTP verbs:
 
-### /add
+### POST
 
 The values to be inserted should go in the form (the columns name must match in order to be included in the query).
 
-### /get
+### GET
 
 The values in the form are the filters (WHERE) of a select statement. Only matching column names are accepted. In case of not specifying any value in the form, the whole table is returned.
 
-### /update
+### PUT
 
 The form should come with two type of values, the filters and the values that are going to be updated. The filters have the prefix 'f_', while the updated values don't.
 
-### /delete
+### DELETE
 
 The values in the form are the filters (WHERE) of a delete statement
 
