@@ -1,6 +1,5 @@
 var http = require('http');
 var fs = require('fs');
-var rmdir = require('rmdir');
 var tables = require('./tables');
 var commons = require('../commons');
 var config;
@@ -33,7 +32,7 @@ var exportedMain = function(_callback) {
 	exceptions = config.exceptions;
 	callback = _callback
 	connection.createPool(conf); //initiate connection pool
-	rmdir(dir, function(){
+	fs.rmdir(dir, {recursive: true}, function(){
 		tables.getTables(connection, response, dbConfig.database);
 	});
 }
@@ -52,6 +51,7 @@ function generate(tables) {
 			var table = tables[i1];
 			if (!table.fields) break it;
 			var name = table.name;
+			// exclude exceptions
 			for (i2 = 0; i2 < exceptions.length; i2++) {
 				if (name == exceptions[i2]) {
 					break it;

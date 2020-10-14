@@ -1,6 +1,5 @@
 var http = require('http');
 var fs = require('fs');
-var rmdir = require('rmdir');
 
 var procedures = require('./descriptions');
 var commons = require('../commons');
@@ -34,7 +33,7 @@ var exportedMain = function(_callback) {
 	callback = _callback;
 	connection.createPool(configuration); //initiate connection pool
 	// Remove existing dir to avoid existing folders to be shown if new exceptions exist
-	rmdir(dir, function(){
+	fs.rmdir(dir, {recursive: true}, function(){
 		procedures.getProcedures(connection, response, dbConfig.database);
 	});
 }
