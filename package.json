@@ -42,5 +42,15 @@
       "name": "Fabian Melendez",
       "github": "https://github.com/mlndz28"
     }
-  ]
+  ],
+  "devDependencies": {
+    "eslint": "^7.11.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-openapi": "0.0.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "express-swagger-generator": "^1.1.17"
+  }
 }

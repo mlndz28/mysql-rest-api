@@ -4,51 +4,51 @@
  * Command line interface for the api.
  * @module api-cli
  */
-var os = require('os');
-var cli = require('cli');
-var async = require('async');
-var _ = require('lodash');
-var server = require('../server.js');
-var proceduresGenerator = require('../generators/procedures/generator.js');
-var crudGenerator = require('../generators/crud/generator.js');
+var os = require('os')
+var cli = require('cli')
+var async = require('async')
+var _ = require('lodash')
+var server = require('../server.js')
+var proceduresGenerator = require('../generators/procedures/generator.js')
+var crudGenerator = require('../generators/crud/generator.js')
 
 cli.parse({
-	port: ['p', 'Port to use. Default: 2828', 'int', 2828],
-	'connection-limit': [false, 'The maximum number of connections to create at once. Default: 100', 'int', 100],
-	'db-host': [false, 'The hostname of the database you are connecting to. Default: localhost', 'string', 'localhost'],
-	'db-port': [false, 'The port number of the database you are connecting to. Default: 3306', 'string', 3306],
-	database: [false, 'Name of the database to use', 'string', false],
-	user: ['u', 'Database user. Default: root', 'string', 'root'],
-	password: [false, 'Password for the database user', 'string', ''],
-	help: ['h', 'Display the help chart'],
-	'skip-crud': [false, 'Do not create a crud'],
-	'skip-procedures': [false, 'Do not include stored procedures in the api']
-});
+  port: ['p', 'Port to use. Default: 2828', 'int', 2828],
+  'connection-limit': [false, 'The maximum number of connections to create at once. Default: 100', 'int', 100],
+  'db-host': [false, 'The hostname of the database you are connecting to. Default: localhost', 'string', 'localhost'],
+  'db-port': [false, 'The port number of the database you are connecting to. Default: 3306', 'string', 3306],
+  database: [false, 'Name of the database to use', 'string', false],
+  user: ['u', 'Database user. Default: root', 'string', 'root'],
+  password: [false, 'Password for the database user', 'string', ''],
+  help: ['h', 'Display the help chart'],
+  'skip-crud': [false, 'Do not create a crud'],
+  'skip-procedures': [false, 'Do not include stored procedures in the api']
+})
 
-var usageText = "Usage:\tmysql-rest-api [configuration file] [options]\n" +
-	"Options:\n" +
-	"\t--port -p <value>\t\tPort to use. Default: 2828\n" +
-	"\t--connection-limit <value>\tThe maximum number of connections to create at once. Default: 100\n" +
-	"\t--db-host <value>\t\tThe hostname of the database you are connecting to. Default: localhost\n" +
-	"\t--db-port <value>\t\tThe port number of the database you are connecting to. Default: 3306\n" +
-	"\t--database <value>\t\tName of the database to use\n" +
-	"\t--user -u <value>\t\tDatabase user. Default: root\n" +
-	"\t--password <value>\t\tPassword for the database user\n" +
-	"\t--help -h\t\t\tDisplay the help chart\n" +
-	"\t--skip-crud\t\t\tDo not create a crud\n" +
-	"\t--skip-procedures\t\tDo not include stored procedures in the api\n";
+var usageText = 'Usage:\tmysql-rest-api [configuration file] [options]\n' +
+	'Options:\n' +
+	'\t--port -p <value>\t\tPort to use. Default: 2828\n' +
+	'\t--connection-limit <value>\tThe maximum number of connections to create at once. Default: 100\n' +
+	'\t--db-host <value>\t\tThe hostname of the database you are connecting to. Default: localhost\n' +
+	'\t--db-port <value>\t\tThe port number of the database you are connecting to. Default: 3306\n' +
+	'\t--database <value>\t\tName of the database to use\n' +
+	'\t--user -u <value>\t\tDatabase user. Default: root\n' +
+	'\t--password <value>\t\tPassword for the database user\n' +
+	'\t--help -h\t\t\tDisplay the help chart\n' +
+	'\t--skip-crud\t\t\tDo not create a crud\n' +
+	'\t--skip-procedures\t\tDo not include stored procedures in the api\n'
 
 /**
  * Prints the usage chart and ends the program.
  */
-var printUsage = function() {
-	console.log(usageText);
-	process.exit();
-};
+var printUsage = function () {
+  console.log(usageText)
+  process.exit()
+}
 
 //	In case the help flag is used or there are no arguments nor options.
 if (cli.options.help || process.argv.length == 2) {
-	printUsage();
+  printUsage()
 }
 
 /**
@@ -57,104 +57,103 @@ if (cli.options.help || process.argv.length == 2) {
  * @param {object} b - Second object to compare
  * @return {bool} Whether the objects have the same keys
  */
-var hasSameKeys = function(a, b) {
-	let keySet = Object.keys(a);
-	if (!_.isEqual(keySet, Object.keys(b))) {
-		return false
-	};
-	for (i = 0; i < keySet.length; i++) {
-		if (typeof a[keySet[i]] == 'object') {
-			if (!hasSameKeys(a[keySet[i]], b[keySet[i]])) {
-				return false
-			};
-		}
-	}
-	return true;
-};
+var hasSameKeys = function (a, b) {
+  const keySet = Object.keys(a)
+  if (!_.isEqual(keySet, Object.keys(b))) {
+    return false
+  };
+  for (i = 0; i < keySet.length; i++) {
+    if (typeof a[keySet[i]] === 'object') {
+      if (!hasSameKeys(a[keySet[i]], b[keySet[i]])) {
+        return false
+      };
+    }
+  }
+  return true
+}
 
 /**
  * Run the generation scripts and start the server.
  */
-var run = function() {
+var run = function () {
+  if (!conf.mysql.database) {
+    cli.fatal('You must specify the database you want connect to.')
+  }
 
-	if (!conf.mysql.database) {
-		cli.fatal("You must specify the database you want connect to.");
-	}
+  var pipeline = []
+  if (conf.generator.crud.include) {
+    pipeline.push(crudGenerator.generate)
+    crudGenerator.set(conf)
+  }
+  if (conf.generator.procedures.include) {
+    proceduresGenerator.set(conf)
+    pipeline.push(proceduresGenerator.generate)
+  }
+  pipeline.push(server.start)
 
-	var pipeline = [];
-	if (conf.generator.crud.include) {
-		pipeline.push(crudGenerator.generate)
-		crudGenerator.set(conf);
-	}
-	if (conf.generator.procedures.include) {
-		proceduresGenerator.set(conf);
-		pipeline.push(proceduresGenerator.generate)
-	}
-	pipeline.push(server.start);
-
-	process.chdir('../');
-	server.set(conf);
-	async.series(pipeline);
+  process.chdir('../')
+  server.set(conf)
+  async.series(pipeline)
 }
 
 /**
  * Sets the configuration object by reading an input file.
  */
-var useConfigurationFile = function() {
-	try {
-		conf = require(process.cwd() + "/" + cli.args[0]);
-		if (!hasSameKeys(conf, require("../conf/example.json"))) {
-			cli.fatal("The configuration file does not meet the proper format. Check the documentation for more information on how to build a configuration file.");
-		}
-		console.log("Using configuration file.");
-	} catch (e) {
-		switch (e.code) {
-			case 'SyntaxError':
-				cli.fatal("The configuration file is not valid. Check the documentation for more information on how to build a configuration file.");
-				break;
-			case 'EACCES':
-				cli.fatal("Unable to open '" + cli.args[0] + "'. Check the level of authorization for this file. Tip: chmod/icacls.");
-				break;
-			case 'MODULE_NOT_FOUND':
-				cli.fatal("'" + cli.args[0] + "' not found.");
-				break;
-			default:
-				cli.fatal(e);
-		}
-	}
-	run();
+var useConfigurationFile = function () {
+  try {
+    conf = require(process.cwd() + '/' + cli.args[0])
+    if (!hasSameKeys(conf, require('../conf/example.json'))) {
+      cli.fatal('The configuration file does not meet the proper format. Check the documentation for more information on how to build a configuration file.')
+    }
+    console.log('Using configuration file.')
+  } catch (e) {
+    switch (e.code) {
+      case 'SyntaxError':
+        cli.fatal('The configuration file is not valid. Check the documentation for more information on how to build a configuration file.')
+        break
+      case 'EACCES':
+        cli.fatal("Unable to open '" + cli.args[0] + "'. Check the level of authorization for this file. Tip: chmod/icacls.")
+        break
+      case 'MODULE_NOT_FOUND':
+        cli.fatal("'" + cli.args[0] + "' not found.")
+        break
+      default:
+        cli.fatal(e)
+    }
+  }
+  run()
 }
 
 /**
  * Sets the configuration object by mapping the command line arguments.
  */
-var useArguments = function() {
-	let opt = cli.options;
-	conf = {};
-	conf.mysql = {};
-	conf.mysql.connectionLimit = opt['connection-limit'];
-	conf.mysql.host = '' + opt['db-host'];
-	conf.mysql.port = '' + opt['db-port'];
-	conf.mysql.user = '' + opt.user;
-	conf.mysql.password = '' + opt.password;
-	conf.mysql.database = '' + opt.database;
-	conf.express = {};
-	conf.express.port = opt.port;
-	conf.generator = {};
-	conf.generator.procedures = {};
-	conf.generator.procedures.include = !opt['skip-procedures'];
-	conf.generator.procedures.exceptions = [];
-	conf.generator.crud = {};
-	conf.generator.crud.include = !opt['skip-crud'];
-	conf.generator.crud.exceptions = [];
+var useArguments = function () {
+  const opt = cli.options
+  conf = {}
+  conf.mysql = {}
+  conf.mysql.connectionLimit = opt['connection-limit']
+  conf.mysql.host = '' + opt['db-host']
+  conf.mysql.port = '' + opt['db-port']
+  conf.mysql.user = '' + opt.user
+  conf.mysql.password = '' + opt.password
+  conf.mysql.database = '' + opt.database
+  conf.express = {}
+  conf.express.port = opt.port
+  conf.generator = {}
+  conf.generator.procedures = {}
+  conf.generator.procedures.include = !opt['skip-procedures']
+  conf.generator.procedures.exceptions = []
+  conf.generator.crud = {}
+  conf.generator.crud.include = !opt['skip-crud']
+  conf.generator.crud.exceptions = []
 
-	run();
+  run()
 }
 
 if (cli.args.length == 1) {
-	useConfigurationFile();
+  useConfigurationFile()
 } else if (cli.args.length) {
-	printUsage();
+  printUsage()
 } else {
-	useArguments();
+  useArguments()
 }
