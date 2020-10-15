@@ -1,10 +1,10 @@
-var http = require('http')
-var fs = require('fs')
+const fs = require('fs')
+const path = require('path')
 
-var procedures = require('./descriptions')
-var commons = require('../commons')
+const procedures = require('./descriptions')
+const commons = require('../commons')
 
-var connection = require('../../api/dbConnection.js') // instantiate connection provider
+const connection = require('../../api/dbConnection.js') // instantiate connection provider
 
 // Mocks the Response object from Express (for this file's purposes at least)
 var response = {
@@ -13,21 +13,20 @@ var response = {
   }
 }
 
-var callback
-var dir
-var exceptions
-var configuration
+let callback
+let dir
+let exceptions
+let configuration
 
 exports.set = function (_configuration) {
   configuration = _configuration
 }
 
 var exportedMain = function (_callback) {
-  var config = configuration.generator.procedures
-  var dbConfig = configuration.mysql
-  var options = config.request
+  const config = configuration.generator.procedures
+  const dbConfig = configuration.mysql
   exceptions = config.exceptions
-  dir = __dirname + '/../../api/routes/gen/procedures/'
+  dir = path.join(__dirname, '../../api/routes/gen/procedures/')
   callback = _callback
   connection.createPool(configuration) // initiate connection pool
   // Remove existing dir to avoid existing folders to be shown if new exceptions exist
@@ -45,16 +44,16 @@ function generate (procedures) {
     return
   }
   commons.mkdirp(dir)
-  for (i1 = 0; i1 < procedures.length; i1++) {
-    it: {
+  for (let i1 = 0; i1 < procedures.length; i1++) {
+    (() => {
       var procedure = procedures[i1]
-      for (i2 = 0; i2 < exceptions.length; i2++) {
-        if (procedures[i1].name == exceptions[i2]) {
-          break it
+      for (let i2 = 0; i2 < exceptions.length; i2++) {
+        if (procedures[i1].name === exceptions[i2]) {
+          return
         }
       }
-      commons.saveToFile(routeCode(procedure), dir + procedure.name + '.js', i1 == procedures.length - 1, callback)
-    }
+      commons.saveToFile(routeCode(procedure), dir + procedure.name + '.js', i1 === procedures.length - 1, callback)
+    })()
   }
   console.log('Procedures generation done.')
 }
@@ -62,13 +61,13 @@ function generate (procedures) {
 // Create query
 function query (name, fields) {
   var statement = 'CALL ' + name + '( '
-  for (i = 0; i < fields.length; i++) {
+  for (let i = 0; i < fields.length; i++) {
     statement += ':V_' + fields[i].name
-    if (i != fields.length - 1) {
+    if (i !== fields.length - 1) {
       statement += ', '
     }
   }
-  statement += ' );'
+  statement += ' )'
 
   return statement
 }
@@ -81,20 +80,20 @@ function routeCode (procedure) {
     js += line + '\n'
   }
 
-  add('var express = require("express");')
+  add('const express = require(\'express\')')
   add('/**')
   add(' * @function ' + procedure.name)
-  for (i = 0; i < procedure.parameters.length; i++) {
+  for (let i = 0; i < procedure.parameters.length; i++) {
     var temp = ' * @param {' + procedure.parameters[i].type + '} ' + procedure.parameters[i].name
     add(temp)
   }
   add(' */\n')
   add('exports.router = function (connection) {')
-  add('	var router = express.Router();')
-  add('	router.post("/procedures/' + procedure.name + '", function (req, res) {')
-  add('		connection.query("' + query(procedure.name, procedure.parameters) + '", req.body, res);')
-  add('	});')
-  add('	return router;')
+  add('  const router = express.Router()')
+  add('  router.post(\'/procedures/' + procedure.name + '\', function (req, res) {')
+  add('    connection.query(\'' + query(procedure.name, procedure.parameters) + '\', req.body, res)')
+  add('  })')
+  add('  return router')
   add('}')
 
   return js

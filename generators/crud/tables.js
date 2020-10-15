@@ -24,7 +24,7 @@ exports.getTables = getTables
 var setTableNames = function (connection, res, db) {
   return {
     json: function (obj) {
-      if (obj.error != 'none') {
+      if (obj.error !== 'none') {
         process.exit()
       }
       var tempObject = {
@@ -34,7 +34,7 @@ var setTableNames = function (connection, res, db) {
       if (!obj.data.length) {
         res.json(tempObject)
       };
-      for (i = 0; i < obj.data.length; i++) {
+      for (let i = 0; i < obj.data.length; i++) {
         var table = obj.data[i]['Tables_in_' + db]
         // table description request
         connection.query('DESCRIBE `' + table + '` ;', {}, setTableDescription(connection, res, tempObject, table, size))
@@ -71,10 +71,10 @@ var setForeignKeys = function (res, tempObject, tableDescription, size) {
     json: function (obj) {
       // add foreign key information if the table has foreign keys
       if (tableDescription.fields) {
-        for (i1 = 0; i1 < obj.data.length; i1++) {
-          for (i2 = 0; i2 < tableDescription.fields.length; i2++) {
+        for (let i1 = 0; i1 < obj.data.length; i1++) {
+          for (let i2 = 0; i2 < tableDescription.fields.length; i2++) {
             // add the foreign key data to the field object if it matches with some of the table columns
-            if (tableDescription.fields[i2].Field == obj.data[i1].COLUMN_NAME) {
+            if (tableDescription.fields[i2].Field === obj.data[i1].COLUMN_NAME) {
               tableDescription.fields[i2].ForeignKey = obj.data[i1]
             }
           }
@@ -83,7 +83,7 @@ var setForeignKeys = function (res, tempObject, tableDescription, size) {
 
       tempObject.tables.push(tableDescription)
 
-      if (tempObject.tables.length == size) {
+      if (tempObject.tables.length === size) {
         // when all tables have been added
         res.json(tempObject)
       }

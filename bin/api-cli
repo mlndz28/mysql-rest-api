@@ -4,13 +4,14 @@
  * Command line interface for the api.
  * @module api-cli
  */
-var os = require('os')
-var cli = require('cli')
-var async = require('async')
-var _ = require('lodash')
-var server = require('../server.js')
-var proceduresGenerator = require('../generators/procedures/generator.js')
-var crudGenerator = require('../generators/crud/generator.js')
+const cli = require('cli')
+const async = require('async')
+const _ = require('lodash')
+const server = require('../server.js')
+const proceduresGenerator = require('../generators/procedures/generator.js')
+const crudGenerator = require('../generators/crud/generator.js')
+
+let conf
 
 cli.parse({
   port: ['p', 'Port to use. Default: 2828', 'int', 2828],
@@ -26,17 +27,17 @@ cli.parse({
 })
 
 var usageText = 'Usage:\tmysql-rest-api [configuration file] [options]\n' +
-	'Options:\n' +
-	'\t--port -p <value>\t\tPort to use. Default: 2828\n' +
-	'\t--connection-limit <value>\tThe maximum number of connections to create at once. Default: 100\n' +
-	'\t--db-host <value>\t\tThe hostname of the database you are connecting to. Default: localhost\n' +
-	'\t--db-port <value>\t\tThe port number of the database you are connecting to. Default: 3306\n' +
-	'\t--database <value>\t\tName of the database to use\n' +
-	'\t--user -u <value>\t\tDatabase user. Default: root\n' +
-	'\t--password <value>\t\tPassword for the database user\n' +
-	'\t--help -h\t\t\tDisplay the help chart\n' +
-	'\t--skip-crud\t\t\tDo not create a crud\n' +
-	'\t--skip-procedures\t\tDo not include stored procedures in the api\n'
+                'Options:\n' +
+                '\t--port -p <value>\t\tPort to use. Default: 2828\n' +
+                '\t--connection-limit <value>\tThe maximum number of connections to create at once. Default: 100\n' +
+                '\t--db-host <value>\t\tThe hostname of the database you are connecting to. Default: localhost\n' +
+                '\t--db-port <value>\t\tThe port number of the database you are connecting to. Default: 3306\n' +
+                '\t--database <value>\t\tName of the database to use\n' +
+                '\t--user -u <value>\t\tDatabase user. Default: root\n' +
+                '\t--password <value>\t\tPassword for the database user\n' +
+                '\t--help -h\t\t\tDisplay the help chart\n' +
+                '\t--skip-crud\t\t\tDo not create a crud\n' +
+                '\t--skip-procedures\t\tDo not include stored procedures in the api\n'
 
 /**
  * Prints the usage chart and ends the program.
@@ -46,8 +47,8 @@ var printUsage = function () {
   process.exit()
 }
 
-//	In case the help flag is used or there are no arguments nor options.
-if (cli.options.help || process.argv.length == 2) {
+// In case the help flag is used or there are no arguments nor options.
+if (cli.options.help || process.argv.length === 2) {
   printUsage()
 }
 
@@ -62,7 +63,7 @@ var hasSameKeys = function (a, b) {
   if (!_.isEqual(keySet, Object.keys(b))) {
     return false
   };
-  for (i = 0; i < keySet.length; i++) {
+  for (let i = 0; i < keySet.length; i++) {
     if (typeof a[keySet[i]] === 'object') {
       if (!hasSameKeys(a[keySet[i]], b[keySet[i]])) {
         return false
@@ -121,7 +122,7 @@ var useConfigurationFile = function () {
         cli.fatal(e)
     }
   }
-  run()
+  run(conf)
 }
 
 /**
@@ -129,7 +130,7 @@ var useConfigurationFile = function () {
  */
 var useArguments = function () {
   const opt = cli.options
-  conf = {}
+  var conf = {}
   conf.mysql = {}
   conf.mysql.connectionLimit = opt['connection-limit']
   conf.mysql.host = '' + opt['db-host']
@@ -150,7 +151,7 @@ var useArguments = function () {
   run()
 }
 
-if (cli.args.length == 1) {
+if (cli.args.length === 1) {
   useConfigurationFile()
 } else if (cli.args.length) {
   printUsage()

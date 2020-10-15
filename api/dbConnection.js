@@ -1,7 +1,5 @@
-var mysql = require('mysql')
-var cli = require('cli')
-
-var pool
+const mysql = require('mysql')
+const cli = require('cli')
 
 /** @module dbConnection */
 
@@ -11,7 +9,7 @@ var pool
  */
 
 exports.createPool = function (configuration) {
-  conf = configuration.mysql
+  const conf = configuration.mysql
   this.pool = mysql.createPool(conf) // create new connection pool
   this.pool.config.connectionConfig.queryFormat = parseQuery // adds formatting to prepared statements
 }
@@ -48,29 +46,28 @@ exports.query = function (statement, body, res) {
 
 function parseQuery (statement, values) {
   if (!values) return statement
-  var temp = statement.replace(/\:V_(\w+)/g, function (txt, key) {
-    if (values.hasOwnProperty(key)) {
-      if (values[key] == '') {
+  let temp = statement.replace(/:V_(\w+)/g, function (txt, key) {
+    if (key in values) {
+      if (values[key] === '') {
         return "' '"
       }
-      if (values[key] == 1 || values[key] == 0) {
+      if (values[key] === 1 || values[key] === 0) {
         return values[key]
       }
       return this.escape(values[key])
     } else {
       return 'NULL'
     }
-    return txt
   }.bind(this))
 
-  temp = temp.replace(/\:C/g, function (txt, key) {
-    var parsed = ''
-    if (values.hasOwnProperty('columns')) {
+  temp = temp.replace(/:C/g, function (txt, key) {
+    let parsed = ''
+    if ('columns' in values) {
       var columns = values.columns.split(',')
       delete values.columns
-      for (i = 0; i < columns.length; i++) {
+      for (let i = 0; i < columns.length; i++) {
         parsed += '`' + columns[i].replace('`', '') + '`'
-        if (i != columns.length - 1) {
+        if (i !== columns.length - 1) {
           parsed += ','
         }
       }
@@ -80,12 +77,12 @@ function parseQuery (statement, values) {
     }
   })
 
-  temp = temp.replace(/\:OF/g, function (txt, key) {
-    var parsed = ''
+  temp = temp.replace(/:OF/g, function (txt, key) {
+    let parsed = ''
     for (var param in values) {
-      if (param.slice(0, 2) == 'f_' && values.hasOwnProperty(param)) {
+      if (param.slice(0, 2) === 'f_' && param in values) {
         parsed += '`' + param.replace(/`|f_/g, '') + "` = '"
-        if (values[param] == 1 || values[param] == 0) {
+        if (values[param] === 1 || values[param] === 0) {
           parsed += values[param] + "' AND "
         } else {
           parsed += values[param].replace("'", '') + "' AND "
@@ -96,24 +93,24 @@ function parseQuery (statement, values) {
     return parsed.slice(0, parsed.length - 4)
   })
 
-  temp = temp.replace(/\:OU/g, function (txt, key) {
-    var parsed = ''
+  temp = temp.replace(/:OU/g, function (txt, key) {
+    let parsed = ''
     for (var param in values) {
-      if (values.hasOwnProperty(param)) {
+      if (param in values) {
         parsed += '`' + param.replace('`', '') + "` = '" + values[param].replace("'", '') + "' "
         parsed += 'AND '
       }
     }
-    if (parsed == '') {
+    if (parsed === '') {
       return '1'
     }
     return parsed.slice(0, parsed.length - 4)
   })
 
-  temp = temp.replace(/\:OR/g, function (txt, key) {
-    var parsed = ''
-    for (var param in values) {
-      if (values.hasOwnProperty(param)) {
+  temp = temp.replace(/:OR/g, function (txt, key) {
+    let parsed = ''
+    for (const param in values) {
+      if (param in values) {
         parsed += '`' + param.replace('`', '') + "` = '" + values[param].replace("'", '') + "' "
         parsed += 'AND '
       }
@@ -121,10 +118,10 @@ function parseQuery (statement, values) {
     return parsed.slice(0, parsed.length - 4)
   })
 
-  temp = temp.replace(/\:OC/g, function (txt, key) {
-    var parsed = ''
+  temp = temp.replace(/:OC/g, function (txt, key) {
+    let parsed = ''
     for (var param in values) {
-      if (param.slice(0, 2) != 'f_' && values.hasOwnProperty(param)) {
+      if (param.slice(0, 2) !== 'f_' && param in values) {
         parsed += '`' + param.replace('`', '') + "` = '" + values[param].replace("'", '') + "' "
         parsed += ', '
       }
@@ -147,8 +144,8 @@ function connect (statement, body, connection, res) {
   connection.query(statement, body, function (err, results) {
     // as it's not being used anymore
     connection.release()
+    const resObject = {}
     if (!err) {
-      var resObject = new Object()
       resObject.error = 'none'
       resObject.data = results
       res.json(resObject)
@@ -167,7 +164,7 @@ function connect (statement, body, connection, res) {
  */
 
 function onError (err, res) {
-  var outError
+  let outError
   switch (err.code) {
     case 'ER_ACCESS_DENIED_ERROR':
       outError = 'No access to the database. Check the user and password, as well as the database user privileges.'
@@ -175,7 +172,8 @@ function onError (err, res) {
     case 'ER_BAD_DB_ERROR':
       outError = 'Database does not exist.'
       break
-    case 'ECONNREFUSED', 'ENOTFOUND':
+    case 'ECONNREFUSED':
+    case 'ENOTFOUND':
       outError = 'Connection refused. No accessible database found on this address.'
       break
     case 'ETIMEDOUT':

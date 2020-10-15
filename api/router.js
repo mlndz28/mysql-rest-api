@@ -1,3 +1,5 @@
+const path = require('path')
+
 /** @module router */
 
 /**
@@ -6,7 +8,7 @@
  * @param connection - DB connection
  */
 exports.route = function (app, connection) {
-  var files = getFiles(__dirname + '/routes')
+  const files = getFiles(path.join(__dirname, 'routes'))
   files.forEach(function (file) {
     addToApp(file, app, connection)
   })
@@ -26,17 +28,17 @@ function addToApp (path, app, connection) {
  */
 
 function getFiles (dir) {
-  var filesystem = require('fs')
-  var results = []
+  const filesystem = require('fs')
+  const results = []
 
   filesystem.readdirSync(dir).forEach(function (file) {
-    var stat = filesystem.statSync(dir + '/' + file)
+    const stat = filesystem.statSync(dir + '/' + file)
 
     if (!stat.isDirectory()) {
       results.push(dir + '/' + file)
     } else {
-      subresults = getFiles(dir + '/' + file)
-      for (i = 0; i < subresults.length; i++) {
+      const subresults = getFiles(dir + '/' + file)
+      for (let i = 0; i < subresults.length; i++) {
         results.push(subresults[i])
       }
     }

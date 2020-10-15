@@ -50,7 +50,7 @@ function toFile (data, type) {
   try { // create folder if it doesn't exist
     fs.mkdirSync('./logs')
   } catch (e) {
-    if (e.code != 'EEXIST') { // expected exception in case it exists
+    if (e.code !== 'EEXIST') { // expected exception in case it exists
       data = e.toString()
     }
   }
@@ -58,7 +58,7 @@ function toFile (data, type) {
   try { // create folder if it doesn't exist
     fs.mkdirSync(dir)
   } catch (e) {
-    if (e.code != 'EEXIST') { // expected exception in case it exists
+    if (e.code !== 'EEXIST') { // expected exception in case it exists
       data = e.toString()
     }
   }

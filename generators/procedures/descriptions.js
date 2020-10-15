@@ -24,7 +24,7 @@ exports.getProcedures = getProcedures
 var getProcedureNames = function (connection, res) {
   return {
     json: function (obj) {
-      if (obj.error != 'none') {
+      if (obj.error !== 'none') {
         process.exit()
       }
       var data = []
@@ -35,7 +35,7 @@ var getProcedureNames = function (connection, res) {
           error: null
         })
       };
-      for (i = 0; i < obj.data.length; i++) {
+      for (let i = 0; i < obj.data.length; i++) {
         var procedure = {}
         procedure.name = obj.data[i].Name
         connection.query('SELECT PARAMETER_NAME, DATA_TYPE, PARAMETER_MODE FROM information_schema.parameters WHERE SPECIFIC_NAME = :V_objName;', {
@@ -63,7 +63,7 @@ var getProcedureDescriptions = function (res, data, procedure, returnSize) {
         })
       }
       data.push(procedure)
-      if (data.length == returnSize) {
+      if (data.length === returnSize) {
         res.json({
           data: data,
           error: null
